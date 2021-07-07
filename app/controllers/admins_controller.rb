@@ -1,51 +1,33 @@
 class AdminsController < ApplicationController
   before_action :set_admin, only: [:show, :update, :destroy]
+  skip_before_action :authenticate_user, only: [:create]
 
-  # GET /admins
-  def index
-    @admins = Admin.all
-
-    render json: @admins
-  end
-
-  # GET /admins/1
   def show
     render json: @admin
   end
 
-  # POST /admins
   def create
-    @admin = Admin.new(admin_params)
-
-    if @admin.save
-      render json: @admin, status: :created, location: @admin
+    @admin = Admin.create(admin_params)
+    if @admin.persisted? && @admin.errors.blank?
+      render json: { message: 'Admin Signed up successfully', user: @admin}, status: 200
     else
-      render json: @admin.errors, status: :unprocessable_entity
+      render json: { message: "User Registration Failed: #{@admin.errors.full_messages.join(',')}"}, status: 403
     end
-  end
-
-  # PATCH/PUT /admins/1
-  def update
-    if @admin.update(admin_params)
-      render json: @admin
-    else
-      render json: @admin.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /admins/1
-  def destroy
-    @admin.destroy
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_admin
-      @admin = Admin.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def admin_params
-      params.fetch(:admin, {})
-    end
+  def set_admin
+    @admin = Admin.find_by(id: params[:id])
+  end
+
+  def admin_params
+      @user_object_params ||= params.permit(
+        :name,
+        :id,
+        :email,
+        :password,
+        :password_confirmation
+      );
+  end
 end

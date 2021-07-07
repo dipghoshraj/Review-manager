@@ -4,15 +4,12 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  validates_uniqueness_of :email
+
 
   
   def create_session
     session_token = SecureRandom.urlsafe_base64(128, false)
-    # chat_token = SecureRandom.urlsafe_base64(64, false)
-    # notification_channel_id = SecureRandom.urlsafe_base64(16, false)
-    # invite_code = self.invite_code.present? ? self.invite_code : SecureRandom.urlsafe_base64(16, false)
-    # set_analytics_logger
-    # key = SecureRandom.hex(8)
     self.update(auth_token: session_token)
   end
 

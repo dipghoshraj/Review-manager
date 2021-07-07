@@ -1,4 +1,6 @@
 class UserController < ApplicationController
+  skip_before_action :authenticate_user, only: [:create]
+  before_action :set_user, only: [:show]
     def create
         @user = User.create(user_params)
         if @user.persisted? && @user.errors.blank?
@@ -8,7 +10,15 @@ class UserController < ApplicationController
         end
     end
 
+    def show
+      render json: { message:'user details', user: @user}, status:200
+    end
+
     private
+
+    def set_user
+      @user = User.find_by(id: params[:id])
+    end
 
     def user_params
         @user_object_params ||= params.permit(

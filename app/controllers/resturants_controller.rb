@@ -1,30 +1,29 @@
 class ResturantsController < ApplicationController
   before_action :set_resturant, only: [:show, :update, :destroy]
+  skip_before_action :authenticate_user, only: [:create]
 
-  # GET /resturants
+  before_action :authenticate_admin, only: [:create]
+
   def index
     @resturants = Resturant.all
 
     render json: @resturants
   end
 
-  # GET /resturants/1
   def show
     render json: @resturant
   end
 
-  # POST /resturants
   def create
-    @resturant = Resturant.new(resturant_params)
+    @resturant = Resturant.create(resturant_params)
 
-    if @resturant.save
-      render json: @resturant, status: :created, location: @resturant
+    if @resturant.persisted? && @resturant.errors.blank?
+      render json: { message: 'Resturant created successfully', user: @resturant}, status: 200
     else
-      render json: @resturant.errors, status: :unprocessable_entity
+      render json: { message: "Resturant created Failed: #{@resturant.errors.full_messages.join(',')}"}, status: 403
     end
   end
 
-  # PATCH/PUT /resturants/1
   def update
     if @resturant.update(resturant_params)
       render json: @resturant
@@ -33,19 +32,21 @@ class ResturantsController < ApplicationController
     end
   end
 
-  # DELETE /resturants/1
   def destroy
     @resturant.destroy
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_resturant
       @resturant = Resturant.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def resturant_params
-      params.fetch(:resturant, {})
+      params.permit(
+        :name,
+        :specility,
+        :location
+      );
     end
 end

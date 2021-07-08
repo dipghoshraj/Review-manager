@@ -22,12 +22,12 @@ class AdminsController < ApplicationController
   end
 
   def admin_params
-      @user_object_params ||= params.permit(
-        :name,
-        :id,
-        :email,
-        :password,
-        :password_confirmation
-      );
+    @user_object_params ||= params.permit(
+      :name,
+      :id,
+      :email,
+      :password,
+      :password_confirmation
+    );
   end
 end

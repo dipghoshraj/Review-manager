@@ -21,11 +21,11 @@ class UserController < ApplicationController
     end
 
     def user_params
-        @user_object_params ||= params.permit(
-          :name,
-          :email,
-          :password,
-          :password_confirmation
-        );
+      @user_object_params ||= params.permit(
+        :name,
+        :email,
+        :password,
+        :password_confirmation
+      );
     end
 end

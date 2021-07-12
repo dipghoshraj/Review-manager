@@ -6,6 +6,8 @@ class Resturant < ApplicationRecord
 
   def as_json(opt={})
     basic_attribute = self.slice(:id, :name, :specility, :location)
+
+    basic_attribute.merge!(dishs: self.dishs)
     return basic_attribute
   end
 end

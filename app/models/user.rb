@@ -6,11 +6,17 @@ class User < ApplicationRecord
 
   validates_uniqueness_of :email
 
+  after_create :invite
+
 
   
   def create_session
     session_token = SecureRandom.urlsafe_base64(128, false)
     self.update(auth_token: session_token)
+  end
+
+  def invite
+    SendNewUserInvitationJob.perform_later(self.email)
   end
 
 

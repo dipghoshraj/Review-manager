@@ -1,6 +1,7 @@
 class Resturant < ApplicationRecord
   validates_uniqueness_of :name
   has_many :dishs, dependent: :destroy
+  has_many :opinions, dependent: :destroy
 
 
   def as_json(opt={})

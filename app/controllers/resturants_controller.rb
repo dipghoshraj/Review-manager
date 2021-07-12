@@ -1,5 +1,6 @@
 class ResturantsController < ApplicationController
   before_action :set_resturant, only: [:show, :update, :destroy]
+  before_action :find_resturant, only: [:reviews]
   skip_before_action :authenticate_user, only: [:create]
 
   before_action :authenticate_admin, only: [:create]
@@ -36,9 +37,31 @@ class ResturantsController < ApplicationController
     @resturant.destroy
   end
 
+  def reviews
+    review = @resturant.opinions.create(review: params[:review], user_id: @user.id)
+    if review.persisted? && review.errors.blank?
+      render json: { message: 'Review added successfully', review: review}, status: 200
+    else
+      render json: { message: "Review adding Failed: #{review.errors.full_messages.join(',')}"}, status: 403
+    end
+  end
+
+  def fetchreviews
+    reviews = Opinion.where(resturant_id: params[:resturant])
+    if reviews.present?
+      render json: { message: 'Review listed successfully', review: reviews}, status: 200
+    else
+      render json: { message: 'No reviw found', review: []}, status: 200
+    end
+  end
+
   private
     def set_resturant
       @resturant = Resturant.find(params[:id])
+    end
+
+    def find_resturant
+      @resturant = Resturant.find_by_id(params[:resturant_id])
     end
 
     # Only allow a list of trusted parameters through.
